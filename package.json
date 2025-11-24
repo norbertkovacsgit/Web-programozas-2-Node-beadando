@@ -1,0 +1,28 @@
+{
+  "name": "project-node",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Node.js Express server to serve the provided static template.",
+  "main": "indito.js",
+  "scripts": {
+    "dev": "nodemon --watch indito.js --exec node indito.js",
+    "start": "node indito.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "compression": "^1.7.4",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "express-mysql-session": "^3.0.2",
+    "express-session": "^1.17.3",
+    "mysql2": "^3.6.0",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

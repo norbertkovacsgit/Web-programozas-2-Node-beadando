@@ -1,0 +1,7 @@
+{
+  "watch": [
+    "indito.js"
+  ],
+  "ext": "js,json",
+  "exec": "node indito.js"
+}
