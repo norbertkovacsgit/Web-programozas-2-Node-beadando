@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>NoteBook</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body class="index is-preload">
+  <div id="page-wrapper">
+    <header id="header" class="alt">
+      <h1 id="logo"><a href="/">NoteBook Site</a></h1>
+
+      <nav id="nav">
+        <ul>
+          <li class="current"><a href="/">Főoldal</a></li>
+
+          <li class="submenu">
+            <a href="#">Egyéb</a>
+            <ul>
+              <li><a href="/devices_page">Készülékek</a></li>
+              <li><a href="/crud_page">Eladok</a></li>
+              <li><a href="/contact_page">Kapcsolat</a></li>
+              <li><a href="/messages_page">Üzenetek</a></li>
+              <% if (isAdmin) { %>
+                <li><a href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+          </li>
+
+          <% if (isAuth) { %>
+            <li>
+              <div style="display: flex; align-items: center; gap: 0.75em">
+                <span>Üdv, <%= (user && (user.firstName || user.username)) %>!</span>
+
+                <form action="/logout" method="post" style="display: inline; margin: 0">
+                  <button class="button" style="
+                      min-width: auto;
+                      padding: 0.6em 0.9em;
+                      line-height: 1.8;
+                    ">
+                    Kijelentkezés
+                  </button>
+                </form>
+              </div>
+            </li>
+            <% } else { %>
+              <li class="nav-right">
+                <a href="/register" class="button primary">Regisztráció</a>
+                <a href="/login" class="button">Bejelentkezés</a>
+              </li>
+              <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <section id="banner">
+      <div class="inner">
+        <header>
+          <h2>NoteBook</h2>
+        </header>
+        <p>
+          Keressen<strong> NoteBook</strong>-ot
+          <br />
+          könnyedén a saját igényeinek megfelelően.
+          <br />
+        </p>
+
+        <footer>
+          <ul class="buttons stacked">
+            <li>
+              <a href="#main" class="button fit scrolly">Tudjon meg többet!</a>
+            </li>
+          </ul>
+        </footer>
+      </div>
+    </section>
+
+    <article id="main">
+      <header class="special container">
+        <span class="icon solid fa-chart-bar"></span>
+        <h2>
+          Villámgyors <strong>laptopok,</strong> villámárakon.
+          <br />
+          Az élet bármely területére.
+        </h2>
+        <p>
+          Válassza ki a teljesítményt, ami Önnel tart : munkához, játékhoz,
+          bármihez.
+          <br />
+          Villámgyors processzorokkal, pörgős SSD-kkel és hosszú üzemidővel
+          minden feladat gördülékeny:
+          <br />a reggeli meetingtől az esti ranked meccsig.
+          <br />
+          Válasszon a legújabb modellek közül, és tapasztalja meg, milyen,
+          amikor a laptop nem visszafog, hanem előre visz.
+        </p>
+      </header>
+
+      <section class="wrapper style2 container special-alt">
+        <div class="row gtr-50">
+          <div class="col-8 col-12-narrower">
+            <header>
+              <h2>
+                Mi a <strong>NoteBook</strong>-nál hiszünk benne, hogy a
+                technológia akkor jó, ha észrevétlenül tesz gyorsabbá és
+                hatékonyabbá.
+              </h2>
+            </header>
+            <p>
+              Gondosan válogatott notebook kínálatunkat szakértői tanácsadás,
+              gyors szállítás és rugalmas garancia egészíti ki, hogy biztosra
+              mehessen. Legyen diák, gamer vagy vállalati döntéshozó, nálunk a
+              teljesítmény, a megbízhatóság és a korrekt ár kéz a kézben jár.
+            </p>
+            <footer>
+              <ul class="buttons">
+                <li>
+                  <a href="/devices_page" class="button">Vásároljon most</a>
+                </li>
+              </ul>
+            </footer>
+          </div>
+          <div class="col-4 col-12-narrower imp-narrower">
+            <ul class="featured-icons">
+              <li>
+                <span class="icon fa-clock"><span class="label">Feature 1</span></span>
+              </li>
+              <li>
+                <span class="icon solid fa-volume-up"><span class="label">Feature 2</span></span>
+              </li>
+              <li>
+                <span class="icon solid fa-laptop"><span class="label">Feature 3</span></span>
+              </li>
+              <li>
+                <span class="icon solid fa-inbox"><span class="label">Feature 4</span></span>
+              </li>
+              <li>
+                <span class="icon solid fa-lock"><span class="label">Feature 5</span></span>
+              </li>
+              <li>
+                <span class="icon solid fa-cog"><span class="label">Feature 6</span></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrapper style1 container special">
+        <div class="row">
+          <div class="col-4 col-12-narrower">
+            <section>
+              <span class="icon solid featured fa-check"></span>
+              <header>
+                <h3>Erő</h3>
+              </header>
+              <p>
+                Az erő az a csend előtti feszültség, majd a rajt pillanata,
+                amikor minden reagál, mint egyetlen izom. Nem kérdez, nem akad
+                meg — egyszerűen győzni akar veled
+              </p>
+            </section>
+          </div>
+          <div class="col-4 col-12-narrower">
+            <section>
+              <span class="icon solid featured fa-check"></span>
+              <header>
+                <h3>Gyorsaság</h3>
+              </header>
+              <p>
+                A gyorsaság a pillanat, amikor a reakcióidőd és a gép válasza
+                egybeesik. A mozdulatodnak nincs ellenállása — csak azonnali
+                válasz és folyamatos lendület.
+              </p>
+            </section>
+          </div>
+          <div class="col-4 col-12-narrower">
+            <section>
+              <span class="icon solid featured fa-check"></span>
+              <header>
+                <h3>Dizájn</h3>
+              </header>
+              <p>
+                A dizájn nem csupán kinézet, hanem jelenlét. Az anyagok
+                találkozása és a részletek aránya olyan harmóniát teremt,
+                amelyben a használat önmagában élmény.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrapper style3 container special">
+        <header class="major">
+          <h2>Vásárlóink főbb preferenciái:</h2>
+        </header>
+
+        <div class="row">
+          <div class="col-6 col-12-narrower">
+            <section>
+              <a href="#" class="image featured"><img src="/images/gpu_banner.jpg" alt="" /></a>
+              <header>
+                <h3>Szupergyors GPU</h3>
+              </header>
+              <p>
+                A szupergyors GPU ott kezdődik, ahol a várakozás véget ér: a
+                képkockák nem csak jönnek, hanem folynak. A szerkesztés, a
+                render és a játék valós időre vált, mintha a gép előre sejtené
+                a következő mozdulatod. Több réteg, nagyobb felbontás,
+                összetettebb jelenetek — a ritmus nem törik meg, csak te
+                döntöd el, mikor állsz meg.
+              </p>
+            </section>
+          </div>
+          <div class="col-6 col-12-narrower">
+            <section>
+              <a href="#" class="image featured"><img src="/images/cpu_banner.jpg" alt="" /></a>
+              <header>
+                <h3>Szupergyors CPU</h3>
+              </header>
+              <p>
+                A szupergyors CPU ott kezdődik, ahol a gondolatod tempóját
+                veszi fel: a feladatok nem sorba állnak, hanem párhuzamosan
+                elkészülnek. Fordítás, táblázatszámítás, több tucat
+                böngészőfül — mind gördülékenyen, megszakítás nélkül. A
+                késlekedés helyét az azonnali válasz veszi át, mintha a gép
+                fél lépéssel előtted járna. Te csak döntesz, a processzor
+                pedig végrehajt.
+              </p>
+            </section>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-6 col-12-narrower">
+            <section>
+              <a href="#" class="image featured"><img src="/images/ssd_banner.jpg" alt="" /></a>
+              <header>
+                <h3>Megszámlálhatatlan tárhely</h3>
+              </header>
+              <p>
+                A nagy tárhely ott kezdődik, ahol semmi sem szorul háttérbe:
+                minden projekt, játék és nyers anyag elfér, még a következő
+                ötletednek is marad hely. Nem kell válogatnod vagy törölgetned
+                — egyszerűen mindent magaddal vihetsz, és bármikor előveheted.
+                Rendezett könyvtárak, nyugodt fej: a kapacitás nem korlát,
+                hanem mozgástér.
+              </p>
+            </section>
+          </div>
+          <div class="col-6 col-12-narrower">
+            <section>
+              <a href="#" class="image featured"><img src="/images/monitor_banner.jpg" alt="" /></a>
+              <header>
+                <h3>Kristálytiszta kijelző</h3>
+              </header>
+              <p>
+                A kristálytiszta kijelző ott kezdődik, ahol a kép nem csak
+                látható, hanem jelen van: éles kontúrok, természetes tónusok,
+                zavaró zaj nélkül. Dokumentum, fotó, film vagy játék — minden
+                részlet magától értetődő, mintha közelebb húznád a világot.
+                Fókuszált figyelem, nyugodt nézés: a képernyő nem elvon, hanem
+                teret ad annak, ami fontos.
+              </p>
+            </section>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <section id="cta">
+      <header>
+        <h2>Eladná használt <strong>eszközét</strong>?</h2>
+        <p>Töltse fel készülékét vagy lépjen kapcsolatba velünk.</p>
+      </header>
+      <footer>
+        <ul class="buttons">
+          <li><a href="/crud_page" class="button primary">Eladok</a></li>
+          <li><a href="contact_page" class="button">Üzenetet írok</a></li>
+        </ul>
+      </footer>
+    </section>
+
+    <footer id="footer">
+      <ul class="icons">
+        <li>
+          <a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a>
+        </li>
+      </ul>
+
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.dropotron.min.js"></script>
+  <script src="/assets/js/jquery.scrolly.min.js"></script>
+  <script src="/assets/js/jquery.scrollex.min.js"></script>
+  <script src="/assets/js/browser.min.js"></script>
+  <script src="/assets/js/breakpoints.min.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
