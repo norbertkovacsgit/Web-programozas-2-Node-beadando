@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Regisztráció</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <style>
+    .stacked .field.align-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 0.75rem;
+    }
+
+    .stacked .field.align-right label {
+      flex: 0 0 140px;
+      margin: 0;
+    }
+
+    .stacked .field.align-right input {
+      width: auto;
+      margin-left: auto;
+      display: block;
+    }
+  </style>
+</head>
+
+<body class="is-preload">
+  <div id="page-wrapper">
+    <section class="container" style="max-width: 520px; margin: 2rem auto">
+      <h1>Regisztráció</h1>
+
+      <form method="post" action="/register" class="stacked">
+        <div class="field align-right">
+          <label for="uname">Felhasználónév</label>
+          <input id="uname" name="uname" required />
+        </div>
+
+        <div class="field align-right">
+          <label for="firstName">Keresztnév</label>
+          <input id="firstName" name="firstName" required />
+        </div>
+
+        <div class="field align-right">
+          <label for="lastName">Vezetéknév</label>
+          <input id="lastName" name="lastName" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required />
+        </div>
+
+        <div class="field">
+          <label for="pw">Jelszó</label>
+          <input id="pw" name="pw" type="password" required minlength="6" />
+        </div>
+        <button type="submit" class="button primary" style="width: 50%; margin: 1.5rem 0">
+          Regisztráció
+        </button>
+      </form>
+
+      <div style="
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-top: 1rem;
+          ">
+        <a href="/">Vissza a főoldalra</a>
+        <a href="/login">Bejelentkezés</a>
+      </div>
+    </section>
+    <footer id="footer">
+      <ul class="icons">
+        <li>
+          <a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a>
+        </li>
+      </ul>
+
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+  </div>
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>

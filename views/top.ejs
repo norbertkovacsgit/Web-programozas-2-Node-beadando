@@ -1,0 +1,16 @@
+<a href="/">Mainpage</a>
+<% if (isAdmin) { %>
+    <a href="/admin-route">Admin</a>
+    <% } if (isAuth) { %>
+        <a href="/protected-route">Dashboard</a>
+        <a href="/logout">Logout</a>
+        <% } else{ %>
+            <a href="/login">Login</a>
+            <% } %>
+                <a href="/register">Register</a>
+                <p></p>
+                <% if (isAuth) { %>
+                    <h1>You are logged in. Hello <%= userName %>!</h1>
+                    <% } else{ %>
+                        <h1>You are not logged in.</h1>
+                        <% } %>
