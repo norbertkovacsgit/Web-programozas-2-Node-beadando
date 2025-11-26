@@ -245,3 +245,25 @@ app.post('/logout', (req, res) => {
 app.get('/protected-route', ensureAuth, (req, res) => {
   res.render('protected', { username: req.user.username });
 });
+
+app.get('/devices_page', async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT 
+        g.id,
+        g.gyarto, g.tipus, g.kijelzo, g.memoria, g.merevlemez,
+        g.videovezerlo, g.ar, g.db,
+        p.gyarto AS cpu_gyarto, p.tipus AS cpu_tipus,
+        o.nev     AS os_nev
+      FROM gep g
+      LEFT JOIN processzor p ON p.id = g.processzorid
+      LEFT JOIN oprendszer o ON o.id = g.oprendszerid
+      ORDER BY g.id
+    `);
+
+    res.render('devices_page', { list: rows, error: null });
+  } catch (e) {
+    console.error('Devices query error:', e);
+    res.render('devices_page', { list: [], error: 'Hiba történt a készülékek lekérdezésekor.' });
+  }
+});

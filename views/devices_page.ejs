@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Készülékek</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body>
+  <div id="page-wrapper">
+    <header id="header">
+      <h1 id="logo"><a href="/">NoteBook Site</a></h1>
+      <nav id="nav">
+        <ul>
+          <li><a href="/">Főoldal</a></li>
+          <li class="submenu">
+            <a href="#">Egyéb</a>
+            <ul>
+              <li class="current"><a href="/devices_page">Készülékek</a></li>
+              <li><a href="/crud_page">Eladok</a></li>
+              <li><a href="/contact_page">Kapcsolat</a></li>
+              <li><a href="/messages_page">Üzenetek</a></li>
+              <% if (isAdmin) { %>
+                <li><a href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+          </li>
+          <% if (isAuth) { %>
+            <li>
+              <div style="display: flex; align-items: center; gap: 0.75em">
+                <span>Üdv, <%= (user && (user.firstName || user.username)) %>!</span>
+                <form action="/logout" method="post" style="display: inline; margin: 0">
+                  <button class="button" style="
+                      min-width: auto;
+                      padding: 0.6em 0.9em;
+                      line-height: 1.8;
+                    ">
+                    Kijelentkezés
+                  </button>
+                </form>
+              </div>
+            </li>
+            <% } else { %>
+              <li><a href="/register" class="button primary">Regisztráció</a></li>
+              <li><a href="/login" class="button">Bejelentkezés</a></li>
+              <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <div style="height: 4.75em"></div>
+
+    <article id="main">
+      <header class="special container">
+        <span class="icon solid fa-laptop"></span>
+        <h2>Készülékek</h2>
+        <p>Találja meg az Önnek való notebookot!</p>
+        <p>Válasszon igényei szerint – tanulás, munka vagy játék.</p>
+        <p>
+          Hasonlítsa össze a modelleket, nézze meg a valós készletet, és
+          rendeljen.
+        </p>
+      </header>
+
+      <section class="container">
+        <div class="large">
+          <% if (error) { %>
+            <p style="color: #b00">
+              <%= error %>
+            </p>
+            <% } %>
+              <% if (list && list.length) { %>
+                <div style="overflow: auto">
+                  <table id="devicesTable" class="default">
+                    <thead>
+                      <tr>
+                        <th>Gyártó</th>
+                        <th>Típus</th>
+                        <th>Kijelző</th>
+                        <th>Memória (MiB)</th>
+                        <th>Merevlemez (GB)</th>
+                        <th>VGA</th>
+                        <th>CPU</th>
+                        <th>OS</th>
+                        <th>Ár</th>
+                        <th>Készlet</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <% list.forEach((row)=> { %>
+                        <tr>
+                          <td>
+                            <%= row.gyarto %>
+                          </td>
+                          <td>
+                            <%= row.tipus %>
+                          </td>
+                          <td>
+                            <%= row.kijelzo %>
+                          </td>
+                          <td>
+                            <%= row.memoria %>
+                          </td>
+                          <td>
+                            <%= row.merevlemez %>
+                          </td>
+                          <td>
+                            <%= row.videovezerlo %>
+                          </td>
+                          <td>
+                            <%= row.cpu_gyarto %>
+                              <%= row.cpu_tipus %>
+                          </td>
+                          <td>
+                            <%= row.os_nev %>
+                          </td>
+                          <td>
+                            <%= row.ar.toLocaleString('hu-HU') %>
+                          </td>
+                          <td>
+                            <%= row.db %>
+                          </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div id="pager" class="row" style="margin-top: 0.75rem">
+                  <div class="col-12">
+                    <div class="pager-wrap" style="
+                    display: inline-flex;
+                    flex-direction: column;
+                    align-items: center;
+                    gap: 0.35rem;
+                  ">
+                      <div class="pager-ctrls" style="display: flex; align-items: center; gap: 0.5rem">
+                        <button id="prev" class="button small" type="button" style="
+                        padding: 0.3em 0.65em;
+                        line-height: 1.1;
+                        font-size: 0.9rem;
+                      ">
+                          &laquo; Előző
+                        </button>
+
+                        <button id="next" class="button small" type="button" style="
+                        padding: 0.3em 0.65em;
+                        line-height: 1.1;
+                        font-size: 0.9rem;
+                      ">
+                          Következő &raquo;
+                        </button>
+
+                        <label for="pageSize" style="margin: 0 0 0 0.5rem"></label>
+                        <select id="pageSize" class="page-size" style="
+                        padding: 0.3em 0.65em;
+                        line-height: 1.1;
+                        font-size: 0.9rem;
+                        text-align: center;
+                        text-align-last: center;
+                      ">
+                          <option>5</option>
+                          <option selected>10</option>
+                          <option>25</option>
+                          <option>50</option>
+                          <option>100</option>
+                          <option>200</option>
+                        </select>
+                      </div>
+                      <div class="pager-info" style="text-align: center; opacity: 0.85">
+                        <span id="info"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <% } else { %>
+                  <p style="text-align: center; margin: 2rem 0">
+                    Nincs megjeleníthető adat.
+                  </p>
+                  <% } %>
+        </div>
+      </section>
+    </article>
+
+    <footer id="footer">
+      <ul class="icons">
+        <li><a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a></li>
+        <li><a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a></li>
+        <li><a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a></li>
+        <li><a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a></li>
+        <li><a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a></li>
+      </ul>
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.dropotron.min.js"></script>
+  <script src="/assets/js/jquery.scrolly.min.js"></script>
+  <script src="/assets/js/jquery.scrollex.min.js"></script>
+  <script src="/assets/js/browser.min.js"></script>
+  <script src="/assets/js/breakpoints.min.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script src="/assets/js/main.js"></script>
+
+  <script>
+    (function () {
+      const table = document.getElementById("devicesTable");
+      if (!table) return;
+      const tbody = table.querySelector("tbody");
+      const rows = Array.from(tbody.querySelectorAll("tr"));
+      const prevBtn = document.getElementById("prev");
+      const nextBtn = document.getElementById("next");
+      const infoSpan = document.getElementById("info");
+      const sizeSel = document.getElementById("pageSize");
+      const allowedSizes = [5, 10, 25, 50, 100, 200];
+      const params = new URLSearchParams(location.search);
+      let pageSize = parseInt(params.get("size") || "10", 10);
+      if (!allowedSizes.includes(pageSize)) pageSize = 5;
+
+      let page = parseInt(params.get("page") || "1", 10);
+      if (isNaN(page) || page < 1) page = 1;
+
+      if (sizeSel) sizeSel.value = String(pageSize);
+
+      function totalPages() {
+        return Math.max(1, Math.ceil(rows.length / pageSize));
+      }
+
+      function clampPage() {
+        const tp = totalPages();
+        if (page > tp) page = tp;
+        if (page < 1) page = 1;
+      }
+
+      function render() {
+        clampPage();
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+
+        rows.forEach((tr, i) => {
+          tr.style.display = i >= start && i < end ? "" : "none";
+        });
+
+        const tp = totalPages();
+        const first = rows.length ? start + 1 : 0;
+        const last = Math.min(end, rows.length);
+
+        if (infoSpan)
+          infoSpan.textContent = `${first}–${last} / ${rows.length} (${page}/${tp})`;
+
+        if (prevBtn) prevBtn.disabled = page <= 1;
+        if (nextBtn) nextBtn.disabled = page >= tp;
+
+        const q = new URLSearchParams(location.search);
+        q.set("page", String(page));
+        q.set("size", String(pageSize));
+        history.replaceState(
+          null,
+          "",
+          `${location.pathname}?${q.toString()}`
+        );
+      }
+
+      prevBtn?.addEventListener("click", () => {
+        page--;
+        render();
+      });
+      nextBtn?.addEventListener("click", () => {
+        page++;
+        render();
+      });
+      sizeSel?.addEventListener("change", (e) => {
+        const n = parseInt(e.target.value, 10);
+        if (allowedSizes.includes(n)) {
+          pageSize = n;
+          page = 1;
+          render();
+        }
+      });
+
+      render();
+    })();
+  </script>
+</body>
+
+</html>
