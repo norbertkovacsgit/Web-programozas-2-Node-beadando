@@ -267,3 +267,178 @@ app.get('/devices_page', async (req, res) => {
     res.render('devices_page', { list: [], error: 'Hiba történt a készülékek lekérdezésekor.' });
   }
 });
+
+async function resolveOsId(db, selectedId, customName) {
+  const n = Number(selectedId);
+  if (Number.isFinite(n) && n > 0) return n;
+
+  if (String(selectedId) !== 'other') return null;
+
+  const name = String(customName || '').trim();
+  if (!name) throw new Error('OS custom name is empty while "other" selected');
+
+  const [found] = await db.promise().query(
+    'SELECT id FROM oprendszer WHERE TRIM(nev) = ? LIMIT 1',
+    [name]
+  );
+  if (found && found.length) return found[0].id;
+
+  const [ins] = await db.promise().query(
+    'INSERT INTO oprendszer (nev) VALUES (?)',
+    [name]
+  );
+  return ins.insertId;
+}
+
+async function resolveCpuId(db, processzorid, cpu_custom_gyarto, cpu_custom_tipus) {
+  if (String(processzorid) !== 'other') return Number(processzorid) || null;
+
+  const gyarto = String(cpu_custom_gyarto || '').trim();
+  const tipus = String(cpu_custom_tipus || '').trim();
+
+  if (!gyarto || !tipus) return null;
+
+  const [ins] = await db.promise().query(
+    'INSERT INTO processzor (gyarto, tipus) VALUES (?, ?)',
+    [gyarto, tipus]
+  );
+  return ins.insertId;
+}
+
+app.get(['/crud_page', '/crud_page/:id'], async (req, res) => {
+  const editId = req.params.id ? Number(req.params.id) : null;
+
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT 
+        g.*,
+        CONCAT(p.gyarto,' ',p.tipus) AS cpu_label,
+        o.nev AS os_nev
+      FROM gep g
+      LEFT JOIN processzor p ON p.id = g.processzorid
+      LEFT JOIN oprendszer  o ON o.id = g.oprendszerid
+      ORDER BY g.id DESC
+    `);
+
+    const [cpus] = await db.promise().query(`
+      SELECT id, CONCAT(gyarto,' ',tipus) AS label
+      FROM processzor
+      ORDER BY gyarto, tipus
+    `);
+    const [oses] = await db.promise().query(`
+      SELECT id, nev
+      FROM oprendszer
+      ORDER BY nev
+    `);
+
+    const editing = editId ? (rows.find(r => r.id === editId) || null) : null;
+
+    return res.render('crud_page', { rows, cpus, oses, editing, error: null });
+  } catch (e) {
+    console.error('CRUD list error:', e);
+    return res.render('crud_page', { rows: [], cpus: [], oses: [], editing: null, error: 'Hiba történt a lista betöltésekor.' });
+  }
+});
+
+app.post('/crud/create', async (req, res) => {
+  try {
+    const {
+      gyarto, tipus, kijelzo, memoria, merevlemez, videovezerlo, ar,
+      processzorid, oprendszerid, db: dbqty,
+      os_custom,
+      cpu_custom_gyarto, cpu_custom_tipus
+    } = req.body;
+
+    const osId = await resolveOsId(db, oprendszerid, os_custom);
+    const cpuId = await resolveCpuId(db, processzorid, cpu_custom_gyarto, cpu_custom_tipus);
+
+    await db.promise().query(
+      `INSERT INTO gep
+       (gyarto, tipus, kijelzo, memoria, merevlemez, videovezerlo, ar, processzorid, oprendszerid, db)
+       VALUES (?,?,?,?,?,?,?,?,?,?)`,
+      [
+        String(gyarto || '').trim(),
+        String(tipus || '').trim(),
+        Number(kijelzo) || 0,
+        Number(memoria) || 0,
+        Number(merevlemez) || 0,
+        String(videovezerlo || '').trim(),
+        Number(ar) || 0,
+        (cpuId ?? (Number(processzorid) || null)),
+        (osId ?? (Number(oprendszerid) || null)),
+        Number(dbqty) || 0
+      ]
+    );
+    res.redirect('/crud_page');
+  } catch (e) {
+    console.error('CRUD create error:', e);
+    res.redirect('/crud_page?err=1');
+  }
+});
+
+app.post('/crud/update/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const {
+      gyarto, tipus, kijelzo, memoria, merevlemez, videovezerlo, ar,
+      processzorid, oprendszerid, db: dbqty,
+      os_custom,
+      cpu_custom_gyarto, cpu_custom_tipus
+    } = req.body;
+
+    const osId = await resolveOsId(db, oprendszerid, os_custom);
+    const cpuId = await resolveCpuId(db, processzorid, cpu_custom_gyarto, cpu_custom_tipus);
+
+    await db.promise().query(
+      `UPDATE gep
+       SET gyarto=?, tipus=?, kijelzo=?, memoria=?, merevlemez=?, videovezerlo=?, ar=?, processzorid=?, oprendszerid=?, db=?
+       WHERE id=?`,
+      [
+        String(gyarto || '').trim(),
+        String(tipus || '').trim(),
+        Number(kijelzo) || 0,
+        Number(memoria) || 0,
+        Number(merevlemez) || 0,
+        String(videovezerlo || '').trim(),
+        Number(ar) || 0,
+        (cpuId ?? (Number(processzorid) || null)),
+        (osId ?? (Number(oprendszerid) || null)),
+        Number(dbqty) || 0,
+        id
+      ]
+    );
+    res.redirect('/crud_page');
+  } catch (e) {
+    console.error('CRUD update error:', e);
+    res.redirect('/crud_page?err=1');
+  }
+});
+
+
+app.post('/crud/delete/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    await db.promise().query(`DELETE FROM gep WHERE id = ?`, [id]);
+    res.redirect('/crud_page');
+  } catch (e) {
+    console.error('CRUD delete error:', e);
+    res.redirect('/crud_page?err=1');
+  }
+
+  async function resolveCpuId(db, processzorid, cpu_custom_tipus) {
+    if (String(processzorid) !== 'other') return Number(processzorid) || null;
+
+    const raw = String(cpu_custom_tipus || '').trim();
+    if (!raw) return null;
+
+    const parts = raw.split(/\s+/);
+    const gyarto = parts.shift() || 'Egyéb';
+    const tipus = parts.length ? parts.join(' ') : raw;
+
+    const [ins] = await db.promise().query(
+      'INSERT INTO processzor (gyarto, tipus) VALUES (?, ?)',
+      [gyarto, tipus]
+    );
+    return ins.insertId;
+  }
+});
