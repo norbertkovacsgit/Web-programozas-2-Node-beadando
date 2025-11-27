@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Eladok</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css" />
+  </noscript>
+  <style>
+    #main.crud-wide header.special.container,
+    #main.crud-wide .wrapper.style4.container {
+      max-width: none;
+      width: 70%;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+
+    #main.crud-wide .container {
+      max-width: none;
+      width: 100%;
+    }
+
+    #main.crud-wide .box {
+      overflow: visible;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="page-wrapper">
+
+    <header id="header">
+      <h1 id="logo"><a href="/">NoteBook Site</a></h1>
+      <nav id="nav">
+        <ul>
+          <li><a href="/">Főoldal</a></li>
+          <li class="submenu">
+            <a href="#">Egyéb</a>
+            <ul>
+              <li><a href="/devices_page">Készülékek</a></li>
+              <li><a href="/crud_page">Eladok</a></li>
+              <li><a href="/contact_page">Kapcsolat</a></li>
+              <li><a href="/messages_page">Üzenetek</a></li>
+              <% if (isAdmin) { %>
+                <li><a href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+          </li>
+          <% if (isAuth) { %>
+            <li>
+              <div style="display:flex;align-items:center;gap:.75em;">
+                <span>Üdv, <%= (user && (user.firstName || user.username)) %>!</span>
+                <form action="/logout" method="post" style="display:inline;margin:0;">
+                  <button class="button"
+                    style="min-width:auto;padding:.6em .9em;line-height:1.8;">Kijelentkezés</button>
+                </form>
+              </div>
+            </li>
+            <% } else { %>
+              <li><a href="/register" class="button primary">Regisztráció</a></li>
+              <li><a href="/login" class="button">Bejelentkezés</a></li>
+              <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <div style="height:4.75em;"></div>
+
+    <article id="main" class="crud-wide">
+      <header class="special container">
+        <span class="icon solid fa-laptop"></span>
+        <h2>Eladok</h2>
+        <p>Új gép felvitele, meglévők módosítása vagy törlése.</p>
+      </header>
+
+      <section class="wrapper style4 container" style="max-width: 100%;">
+        <div class="content">
+
+          <% if (error) { %>
+            <p style="color:#b00;">
+              <%= error %>
+            </p>
+            <% } %>
+
+              <section class="box">
+                <header>
+                  <h3 style="margin-bottom:.5rem;">
+                    <%= editing ? ('Rekord szerkesztése (ID: '+editing.id+' )') : 'Adja meg a specifikációkat:' %>
+                  </h3>
+                </header>
+                <form action="<%= editing ? ('/crud/update/'+editing.id) : '/crud/create' %>" method="post">
+                  <div class="row gtr-50 gtr-uniform">
+                    <div class="col-6 col-12-mobile">
+                      <input id="gyarto" type="text" name="gyarto" placeholder="Gyártó"
+                        value="<%= editing?.gyarto || '' %>" required>
+                    </div>
+                    <div class="col-6 col-12-mobile">
+                      <input id="tipus" type="text" name="tipus" placeholder="Típus" value="<%= editing?.tipus || '' %>"
+                        required>
+                    </div>
+                    <div class="col-4 col-12-mobile"
+                      style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                      <input id="kijelzo" type="number" step="0.1" min="0" inputmode="decimal" name="kijelzo"
+                        placeholder="Kijelző (inch)" value="<%= editing?.kijelzo ?? '' %>" required
+                        style="text-align:center;">
+                    </div>
+                    <div class="col-4 col-12-mobile"
+                      style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                      <input id="memoria" type="number" min="0" step="1" inputmode="numeric" name="memoria"
+                        placeholder="Memória (MiB)" value="<%= editing?.memoria ?? '' %>" required
+                        style="text-align:center;">
+                    </div>
+                    <div class="col-4 col-12-mobile"
+                      style="display:flex;justify-content:center;gap:1rem;flex-wrap:wrap;">
+                      <input id="merevlemez" type="number" min="0" step="1" inputmode="numeric" name="merevlemez"
+                        placeholder="Merevlemez (GB)" value="<%= editing?.merevlemez ?? '' %>" required
+                        style="text-align:center;">
+                    </div>
+                    <div class="col-12">
+                      <input id="vga" type="text" name="videovezerlo" placeholder="VGA"
+                        value="<%= editing?.videovezerlo || '' %>">
+                    </div>
+                    <div class="col-6 col-12-mobile" style="text-align:center;">
+                      <select id="os" name="oprendszerid" required
+                        style="display:block; margin:.5rem auto; text-align-last:center;">
+                        <option value="">– Operációs rendszer –</option>
+                        <% oses.forEach(o=> { %>
+                          <option style="text-align:left;" value="<%= o.id %>" <%=editing && editing.oprendszerid===o.id
+                            ? 'selected' : '' %>>
+                            <%= o.nev %>
+                          </option>
+                          <% }) %>
+                            <option value="other" style="text-align:left;">Egyéb…</option>
+                      </select>
+                      <input id="os_custom" name="os_custom" type="text" placeholder="Új operációs rendszer neve"
+                        style="display:none; margin:.5rem auto;" />
+                    </div>
+                    <div class="col-6 col-12-mobile" style="text-align:center;">
+                      <select id="cpu" name="processzorid" required
+                        style="display:block; margin:.5rem auto; text-align-last:center;">
+                        <option value="">– CPU –</option>
+                        <% cpus.forEach(c=> { %>
+                          <option style="text-align:left;" value="<%= c.id %>" <%=editing && editing.processzorid===c.id
+                            ? 'selected' : '' %>>
+                            <%= c.label %>
+                          </option>
+                          <% }) %>
+                            <option value="other" style="text-align:left;">Egyéb…</option>
+                      </select>
+                      <div id="cpu_custom_wrap" style="display:none; margin:.5rem auto; max-width:28rem;">
+                        <div class="row gtr-25">
+                          <div class="col-6 col-12-mobile">
+                            <input id="cpu_custom_brand" name="cpu_custom_gyarto" type="text" placeholder="Gyártó">
+                          </div>
+                          <div class="col-6 col-12-mobile">
+                            <input id="cpu_custom_type" name="cpu_custom_tipus" type="text" placeholder="Típus">
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <script>
+                      (function () {
+                        function setupToggle(selId, customContainerId, customFieldIds) {
+                          const sel = document.getElementById(selId);
+                          const wrap = document.getElementById(customContainerId);
+                          const fields = (customFieldIds || []).map(id => document.getElementById(id));
+
+                          function toggle() {
+                            const isOther = sel && sel.value === 'other';
+                            if (sel) sel.required = !isOther;
+
+                            if (wrap) wrap.style.display = isOther ? 'block' : 'none';
+                            fields.forEach(f => {
+                              if (!f) return;
+                              f.required = isOther;
+                              if (!isOther) f.value = '';
+                            });
+                          }
+
+                          if (sel) {
+                            sel.addEventListener('change', toggle);
+                            toggle();
+                          }
+                        }
+                        setupToggle('os', 'os_custom', ['os_custom']);
+                        setupToggle('cpu', 'cpu_custom_wrap', ['cpu_custom_brand', 'cpu_custom_type']);
+                      })();
+                    </script>
+                    <div class="col-12" style="height:5rem;"></div>
+                    <div class="crud-row5">
+                      <style>
+                        .crud-row5 {
+                          display: grid;
+                          grid-template-columns: 1fr auto;
+                          grid-template-areas:
+                            "price right"
+                            "save  cancel";
+                          gap: 1.25rem 1.25rem;
+                          align-items: start;
+                          margin-top: 1rem;
+                          margin-bottom: 1.25rem;
+                        }
+
+                        .crud-row5 .price {
+                          grid-area: price;
+                        }
+
+                        .crud-row5 .right-col {
+                          grid-area: right;
+                          justify-self: end;
+                          width: 12rem;
+                        }
+
+                        .crud-row5 .actions-left {
+                          grid-area: save;
+                          justify-self: start;
+                        }
+
+                        .crud-row5 .actions-right {
+                          grid-area: cancel;
+                          justify-self: end;
+                        }
+
+                        .crud-row5 .right-col input#db {
+                          width: 100%;
+                          text-align: left;
+                        }
+
+                        .crud-row5 .buttons .button,
+                        .crud-row5 .buttons input[type="submit"] {
+                          padding: .5em 1.2em;
+                          font-size: .95rem;
+                          line-height: 1.15;
+                        }
+                      </style>
+                      <div class="price">
+                        <input id="ar" type="number" inputmode="numeric" name="ar" placeholder="Ár" min="0" step="1"
+                          style="text-align:left; display:block; margin:0;" value="<%= editing?.ar ?? '' %>" required>
+                      </div>
+
+                      <div class="right-col">
+                        <input id="db" type="number" inputmode="numeric" name="db" placeholder="Db" min="0" step="1"
+                          value="<%= editing?.db ?? 0 %>" required>
+                      </div>
+
+                      <div class="actions-left">
+                        <ul class="buttons" style="display:flex; gap:.75rem; padding-left:0; margin:0;">
+                          <li>
+                            <input type="submit" class="special" value="<%= editing ? 'Mentés' : 'Hozzáadás' %>">
+                          </li>
+                        </ul>
+                      </div>
+
+                      <div class="actions-right">
+                        <% if (editing) { %>
+                          <ul class="buttons" style="display:flex; gap:.75rem; padding-left:0; margin:0;">
+                            <li>
+                              <a class="button" href="/crud_page"
+                                style="background:#c0392b; border-color:#c0392b; color:#fff !important;">
+                                Mégse
+                              </a>
+                            </li>
+                          </ul>
+                          <% } %>
+                      </div>
+                    </div>
+
+                    <div class="col-12" style="height:5rem;"></div>
+
+                  </div>
+                </form>
+              </section>
+
+              <div style="overflow-x:auto; width:100%;">
+                <table id="crudTable" class="default" style="min-width: 1100px; table-layout:auto;">
+                  <thead>
+                    <tr>
+                      <th>Gyártó</th>
+                      <th>Típus</th>
+                      <th>Kijelző</th>
+                      <th>Memória</th>
+                      <th>HDD</th>
+                      <th>CPU</th>
+                      <th>VGA</th>
+                      <th>Ár</th>
+                      <th>OS</th>
+                      <th>Db</th>
+                      <th>Műveletek</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (rows && rows.length) { %>
+                      <% rows.forEach(r=> { %>
+                        <tr>
+                          <td>
+                            <%= r.gyarto %>
+                          </td>
+                          <td>
+                            <%= r.tipus %>
+                          </td>
+                          <td style="white-space:nowrap;">
+                            <%= r.kijelzo %>"
+                          </td>
+                          <td>
+                            <%= r.memoria %>
+                          </td>
+                          <td>
+                            <%= r.merevlemez %>
+                          </td>
+                          <td>
+                            <%= r.cpu_label || ('#' + r.processzorid) %>
+                          </td>
+                          <td>
+                            <%= r.videovezerlo %>
+                          </td>
+                          <td style="white-space:nowrap;">
+                            <%= Number(r.ar).toLocaleString('hu-HU') %>
+                          </td>
+                          <td>
+                            <%= r.os_nev || ('#' + r.oprendszerid) %>
+                          </td>
+                          <td>
+                            <%= r.db %>
+                          </td>
+                          <td style="white-space:nowrap;">
+                            <div style="display:flex; align-items:center; gap:.5rem;">
+                              <a class="button small" href="/crud_page/<%= r.id %>"
+                                style="padding: 0.35em 0.7em;">Szerk.</a>
+
+                              <form action="/crud/delete/<%= r.id %>" method="post"
+                                style="display:inline-block; margin:0;" onsubmit="return confirm('Biztosan törlöd?');">
+                                <button class="button small"
+                                  style="padding:.35em .7em; background:#c0392b; border-color:#c0392b; color:#fff;">Törlés</button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                        <% }) %>
+                          <% } else { %>
+                            <tr>
+                              <td colspan="12" style="text-align:center;">Nincs megjeleníthető rekord.</td>
+                            </tr>
+                            <% } %>
+                  </tbody>
+                </table>
+              </div>
+              <div id="pager" class="row" style="margin-top:.75rem;">
+                <div class="col-12">
+                  <div class="pager-wrap"
+                    style="display:inline-flex; flex-direction:column; align-items:center; gap:.35rem;">
+                    <div class="pager-ctrls" style="display:flex; align-items:center; gap:.5rem;">
+                      <button id="prev" class="button small" type="button"
+                        style="padding:.3em .65em; line-height:1.1; font-size:.9rem;">
+                        &laquo; Előző
+                      </button>
+                      <button id="next" class="button small" type="button"
+                        style="padding:.3em .65em; line-height:1.1; font-size:.9rem;">
+                        Következő &raquo;
+                      </button>
+                      <label for="pageSize" style="margin:0 0 0 .5rem;"></label>
+                      <select id="pageSize" class="page-size"
+                        style="padding:.3em .65em; line-height:1.1; font-size:.9rem; text-align:center; text-align-last:center;">
+                        <option>5</option>
+                        <option selected>10</option>
+                        <option>25</option>
+                        <option>50</option>
+                        <option>100</option>
+                        <option>200</option>
+                      </select>
+                    </div>
+                    <div class="pager-info" style="text-align:center; opacity:.85;">
+                      <span id="info"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        </div>
+      </section>
+    </article>
+
+    <footer id="footer">
+      <ul class="icons">
+        <li><a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a></li>
+        <li><a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a></li>
+        <li><a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a></li>
+        <li><a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a></li>
+        <li><a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a></li>
+      </ul>
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.dropotron.min.js"></script>
+  <script src="/assets/js/jquery.scrolly.min.js"></script>
+  <script src="/assets/js/jquery.scrollgress.min.js"></script>
+  <script src="/assets/js/jquery.scrollex.min.js"></script>
+  <script src="/assets/js/browser.min.js"></script>
+  <script src="/assets/js/breakpoints.min.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script src="/assets/js/main.js"></script>
+
+  <script>
+    (function () {
+      const table = document.getElementById('crudTable');
+      if (!table) return;
+      const tbody = table.querySelector('tbody');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+      const infoSpan = document.getElementById('info');
+      const sizeSel = document.getElementById('pageSize');
+      const params = new URLSearchParams(location.search);
+      let pageSize = parseInt(params.get('csize') || '10', 10);
+      if (![5, 10, 25, 50, 100, 200].includes(pageSize)) pageSize = 25;
+      let page = parseInt(params.get('cpage') || '1', 10);
+      if (isNaN(page) || page < 1) page = 1;
+
+      sizeSel.value = String(pageSize);
+
+      function totalPages() { return Math.max(1, Math.ceil(rows.length / pageSize)); }
+      function clamp() { const tp = totalPages(); if (page > tp) page = tp; if (page < 1) page = 1; }
+
+      function render() {
+        clamp();
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+
+        rows.forEach((tr, i) => tr.style.display = (i >= start && i < end) ? '' : 'none');
+
+        const tp = totalPages();
+        const first = rows.length ? (start + 1) : 0;
+        const last = Math.min(end, rows.length);
+        if (infoSpan) infoSpan.textContent = `${first}–${last} / ${rows.length} (${page}/${tp})`;
+
+        if (prevBtn) prevBtn.disabled = page <= 1;
+        if (nextBtn) nextBtn.disabled = page >= tp;
+
+        const p = new URLSearchParams(location.search);
+        p.set('cpage', String(page));
+        p.set('csize', String(pageSize));
+        history.replaceState(null, '', `${location.pathname}?${p.toString()}`);
+      }
+
+      function onPrev() { page--; render(); }
+      function onNext() { page++; render(); }
+      function onSizeChange(val) {
+        const n = parseInt(val, 10);
+        if ([5, 10, 25, 50, 100, 200].includes(n)) { pageSize = n; page = 1; render(); }
+      }
+
+      prevBtn?.addEventListener('click', onPrev);
+      nextBtn?.addEventListener('click', onNext);
+      sizeSel?.addEventListener('change', e => onSizeChange(e.target.value));
+
+      render();
+    })();
+  </script>
+</body>
+
+</html>
