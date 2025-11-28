@@ -442,3 +442,39 @@ app.post('/crud/delete/:id', async (req, res) => {
     return ins.insertId;
   }
 });
+
+app.post('/contact_page', async (req, res) => {
+  const { name, email, subject, message } = req.body;
+
+  if (!name || !email || !subject || !message) {
+    return res.status(400).render('contact_page', {
+      sent: false,
+      error: 'Kérjük tölts ki minden mezőt.',
+      form: { name, email, subject, message }
+    });
+  }
+  if (!/^\S+@\S+\.\S+$/.test(String(email))) {
+    return res.status(400).render('contact_page', {
+      sent: false,
+      error: 'Hibás email cím.',
+      form: { name, email, subject, message }
+    });
+  }
+
+  try {
+    const userId = req.user?.id || null;
+    await db.promise().query(
+      'INSERT INTO contact_messages (user_id, name, email, subject, message) VALUES (?,?,?,?,?)',
+      [userId, String(name).trim(), String(email).trim(), String(subject).trim(), String(message).trim()]
+    );
+    return res.redirect('/contact_page?sent=1');
+  } catch (e) {
+    console.error('CONTACT SAVE ERROR:', e);
+    return res.status(500).render('contact_page', {
+      sent: false,
+      error: 'Váratlan hiba történt. Próbáld újra később.',
+      form: { name, email, subject, message }
+    });
+  }
+});
+

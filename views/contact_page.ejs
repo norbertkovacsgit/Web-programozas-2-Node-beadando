@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Kapcsolat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body>
+  <div id="page-wrapper">
+    <header id="header">
+      <h1 id="logo"><a href="/">NoteBook Site</a></h1>
+      <nav id="nav">
+        <ul>
+          <li><a href="/">Főoldal</a></li>
+          <li class="submenu">
+            <a href="#">Egyéb</a>
+            <ul>
+              <li><a href="/devices_page">Készülékek</a></li>
+              <li><a href="/crud_page">Eladok</a></li>
+              <li><a href="/contact_page">Kapcsolat</a></li>
+              <li><a href="/messages_page">Üzenetek</a></li>
+              <% if (isAdmin) { %>
+                <li><a href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+          </li>
+
+          <% if (isAuth) { %>
+            <li>
+              <div style="display: flex; align-items: center; gap: 0.75em">
+                <span>Üdv, <%= (user && (user.firstName || user.username)) %>!</span>
+                <form action="/logout" method="post" style="display: inline; margin: 0">
+                  <button class="button" style="
+                      min-width: auto;
+                      padding: 0.6em 0.9em;
+                      line-height: 1.8;
+                    ">
+                    Kijelentkezés
+                  </button>
+                </form>
+              </div>
+            </li>
+            <% } else { %>
+              <li><a href="/register" class="button primary">Regisztráció</a></li>
+              <li><a href="/login" class="button">Bejelentkezés</a></li>
+              <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <div style="height: 4.75em"></div>
+    <article id="main">
+      <header class="special container">
+        <span class="icon solid fa-envelope"></span>
+        <h2>Kapcsolat</h2>
+        <p>Lépjen kapcsolatba velünk felmerülő kérdéseivel.</p>
+      </header>
+      <section class="wrapper style4 special container medium">
+        <div class="content">
+          <% if (sent) { %>
+            <p style="
+                background: #e6ffed;
+                border: 1px solid #b7ebc6;
+                color: #14532d;
+                padding: 0.75em 1em;
+                border-radius: 4px;
+              ">
+              Köszönjük, üzeneted megkaptuk!
+            </p>
+            <% } %>
+              <% if (error) { %>
+                <p style="
+                background: #ffecec;
+                border: 1px solid #f5c2c7;
+                color: #7a1212;
+                padding: 0.75em 1em;
+                border-radius: 4px;
+              ">
+                  <%= error %>
+                </p>
+                <% } %>
+
+                  <form action="/contact_page" method="post" novalidate>
+                    <div class="row gtr-50">
+                      <div class="col-6 col-12-mobile">
+                        <input type="text" name="name" placeholder="Név" required
+                          value="<%= (form && form.name) || '' %>" />
+                      </div>
+                      <div class="col-6 col-12-mobile">
+                        <input type="email" name="email" placeholder="Email" required
+                          value="<%= (form && form.email) || '' %>" />
+                      </div>
+                      <div class="col-12">
+                        <input type="text" name="subject" placeholder="Tárgy" required
+                          value="<%= (form && form.subject) || '' %>" />
+                      </div>
+                      <div class="col-12">
+                        <textarea name="message" placeholder="Üzenet" rows="7" required>
+<%= (form && form.message) || '' %></textarea>
+                      </div>
+                      <div class="col-12">
+                        <ul class="buttons">
+                          <li>
+                            <input type="submit" class="special" value="Küldés" />
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </form>
+        </div>
+      </section>
+    </article>
+
+    <footer id="footer">
+      <ul class="icons">
+        <li>
+          <a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a>
+        </li>
+      </ul>
+
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.dropotron.min.js"></script>
+  <script src="/assets/js/jquery.scrolly.min.js"></script>
+  <script src="/assets/js/jquery.scrollgress.min.js"></script>
+  <script src="/assets/js/jquery.scrollex.min.js"></script>
+  <script src="/assets/js/browser.min.js"></script>
+  <script src="/assets/js/breakpoints.min.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
