@@ -478,3 +478,26 @@ app.post('/contact_page', async (req, res) => {
   }
 });
 
+app.get('/messages_page', ensureRole(['user', 'admin']), async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT 
+        id, user_id, name, email, subject, message,
+        DATE_FORMAT(created_at, '%Y.%m.%d %H:%i:%s') AS sent_at
+      FROM contact_messages
+      ORDER BY created_at DESC, id DESC
+    `);
+    res.render('messages_page', { rows, error: null });
+  } catch (e) {
+    console.error('LIST MESSAGES ERROR:', e);
+    res.render('messages_page', { rows: [], error: 'Nem sikerült lekérdezni az üzeneteket.' });
+  }
+});
+
+app.get('/contact_page', (req, res) => {
+  return res.render('contact_page', {
+    sent: req.query.sent === '1',
+    error: null,
+    form: {}
+  });
+});
