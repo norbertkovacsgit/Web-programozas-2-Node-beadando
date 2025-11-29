@@ -528,3 +528,4 @@ app.listen(PORT, () => {
   console.log(`Szerver fut: http://localhost:${PORT}`);
   console.log(`Statikus gyökér: ${STATIC_ROOT}`);
 });
+
