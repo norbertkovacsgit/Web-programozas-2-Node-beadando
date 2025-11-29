@@ -478,3 +478,53 @@ app.post('/contact_page', async (req, res) => {
   }
 });
 
+app.get('/messages_page', ensureRole(['user', 'admin']), async (req, res) => {
+  try {
+    const [rows] = await db.promise().query(`
+      SELECT 
+        id, user_id, name, email, subject, message,
+        DATE_FORMAT(created_at, '%Y.%m.%d %H:%i:%s') AS sent_at
+      FROM contact_messages
+      ORDER BY created_at DESC, id DESC
+    `);
+    res.render('messages_page', { rows, error: null });
+  } catch (e) {
+    console.error('LIST MESSAGES ERROR:', e);
+    res.render('messages_page', { rows: [], error: 'Nem sikerült lekérdezni az üzeneteket.' });
+  }
+});
+
+app.get('/contact_page', (req, res) => {
+  return res.render('contact_page', {
+    sent: req.query.sent === '1',
+    error: null,
+    form: {}
+  });
+});
+
+app.get('/admin', ensureRole('admin'), (req, res) => {
+  return res.render('admin', { userName: req.user.username });
+});
+
+app.get('/', (req, res) => res.render('index'));
+
+app.get('/:page', (req, res, next) => {
+  const reserved = new Set([
+    'login', 'register', 'logout', 'protected-route', 'admin-route', 'healthz',
+    'login-failure', 'userAlreadyExists', 'notAuthorized', 'notAuthorizedAdmin',
+    'messages_page', 'devices_page', 'crud_page'
+  ]);
+  const page = req.params.page;
+  if (reserved.has(page)) return next();
+
+  const viewPath = path.join(app.get('views'), page + '.ejs');
+  if (fs.existsSync(viewPath)) return res.render(page);
+  return next();
+});
+
+app.use((req, res) => res.status(404).send('404 - Nem található'));
+
+app.listen(PORT, () => {
+  console.log(`Szerver fut: http://localhost:${PORT}`);
+  console.log(`Statikus gyökér: ${STATIC_ROOT}`);
+});

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="hu">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <noscript>
+    <link rel="stylesheet" href="/assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body>
+  <div id="page-wrapper">
+    <header id="header">
+      <h1 id="logo"><a href="/">NoteBook Site</a></h1>
+      <nav id="nav">
+        <ul>
+          <li><a href="/">Főoldal</a></li>
+
+          <li class="submenu">
+            <a href="#">Egyéb</a>
+            <ul>
+              <li><a href="/devices_page">Készülékek</a></li>
+              <li><a href="/crud_page">Eladok</a></li>
+              <li><a href="/contact_page">Kapcsolat</a></li>
+              <li><a href="/messages_page">Üzenetek</a></li>
+              <% if (isAdmin) { %>
+                <li><a href="/admin">Admin</a></li>
+                <% } %>
+            </ul>
+          </li>
+
+          <% if (isAuth) { %>
+            <li>
+              <div style="display: flex; align-items: center; gap: 0.75em">
+                <span>Üdv, <%= (user && (user.firstName || user.username)) %>!</span>
+                <form action="/logout" method="post" style="display: inline; margin: 0">
+                  <button class="button" style="
+                      min-width: auto;
+                      padding: 0.6em 0.9em;
+                      line-height: 1.8;
+                    ">
+                    Kijelentkezés
+                  </button>
+                </form>
+              </div>
+            </li>
+            <% } else { %>
+              <li><a href="/register" class="button primary">Regisztráció</a></li>
+              <li><a href="/login" class="button">Bejelentkezés</a></li>
+              <% } %>
+        </ul>
+      </nav>
+    </header>
+
+    <div style="height: 4.75em"></div>
+    <article id="main">
+      <header class="special container">
+        <span class="icon solid fa-lock"></span>
+        <h2>Admin felület</h2>
+        <p>Üdv, <strong>
+            <%= userName %>
+          </strong>!</p>
+      </header>
+
+      <section class="wrapper style3 container special">
+        <div class="row aln-center">
+          <div class="col-10 col-12-narrower">
+            <div style="
+                  background: #ffffff;
+                  border: 1px solid rgba(124, 128, 129, 0.2);
+                  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+                  padding: 2.5em;
+                  min-height: 240px;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  text-align: center;
+                  font-size: 1.15em;
+                ">
+              <strong>Admin szerepkör számára fentartott oldal.</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
+
+    <footer id="footer">
+      <ul class="icons">
+        <li>
+          <a href="#" class="icon brands circle fa-twitter"><span class="label">Twitter</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-facebook-f"><span class="label">Facebook</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-google-plus-g"><span class="label">Google+</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-github"><span class="label">Github</span></a>
+        </li>
+        <li>
+          <a href="#" class="icon brands circle fa-dribbble"><span class="label">Dribbble</span></a>
+        </li>
+      </ul>
+
+      <ul class="copyright">
+        <li>&copy; NoteBook Site</li>
+        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </footer>
+  </div>
+
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/jquery.dropotron.min.js"></script>
+  <script src="/assets/js/jquery.scrolly.min.js"></script>
+  <script src="/assets/js/jquery.scrollex.min.js"></script>
+  <script src="/assets/js/browser.min.js"></script>
+  <script src="/assets/js/breakpoints.min.js"></script>
+  <script src="/assets/js/util.js"></script>
+  <script src="/assets/js/main.js"></script>
+</body>
+
+</html>
